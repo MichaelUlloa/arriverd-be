@@ -1,4 +1,6 @@
+using arriverd_be;
 using arriverd_be.Data;
+using arriverd_be.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,28 +23,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    // Include 'SecurityScheme' to use JWT Authentication
-    var jwtSecurityScheme = new OpenApiSecurityScheme
-    {
-        BearerFormat = "JWT",
-        Name = "JWT Authentication",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http,
-        Scheme = JwtBearerDefaults.AuthenticationScheme,
-        Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
-        Reference = new OpenApiReference
-        {
-            Id = JwtBearerDefaults.AuthenticationScheme,
-            Type = ReferenceType.SecurityScheme
-        }
-    };
+    options.OperationFilter<AuthResponsesOperationFilter>();
 
-    options.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        { jwtSecurityScheme, Array.Empty<string>() }
-    });
+    options.AddSecurityDefinition(Constants.JWT_SECURITY_SCHEMA.Reference.Id, Constants.JWT_SECURITY_SCHEMA);
 });
 
 // Authenticaton
