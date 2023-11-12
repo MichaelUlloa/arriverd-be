@@ -1,14 +1,12 @@
 using arriverd_be.Data;
 using arriverd_be.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace arriverd_be.Controllers;
 
-[ApiController]
-[Authorize]
 [Route("api/payment-methods")]
-public class PaymentMethodController : ControllerBase
+public class PaymentMethodController : BaseApiController
 {
     private readonly ILogger<PaymentMethodController> _logger;
     private readonly ArriveDbContext _dbContext;
@@ -22,6 +20,6 @@ public class PaymentMethodController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<PaymentMethod> Get()
-        => _dbContext.PaymentMethods;
+    public async Task<IEnumerable<PaymentMethod>> Get()
+        => await _dbContext.PaymentMethods.ToListAsync();
 }
