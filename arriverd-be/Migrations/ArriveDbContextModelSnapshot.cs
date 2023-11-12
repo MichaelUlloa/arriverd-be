@@ -220,7 +220,7 @@ namespace arriverd_be.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("arriverd_be.Entities.PaymentMethod", b =>
+            modelBuilder.Entity("arriverd_be.Entities.Excursion", b =>
                 {
                     b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,8 +228,51 @@ namespace arriverd_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
+                    b.Property<string>("DepartureLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Destination")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DestinationLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EquipmentDetails")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<bool?>("IsPublic")
+                        .HasColumnType("bit");
+
+                    b.Property<short?>("MaxReservations")
+                        .HasColumnType("smallint");
+
+                    b.Property<short?>("MinReservations")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Excursions");
+                });
+
+            modelBuilder.Entity("arriverd_be.Entities.PaymentMethod", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");

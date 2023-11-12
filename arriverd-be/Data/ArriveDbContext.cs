@@ -11,4 +11,5 @@ public class ArriveDbContext : IdentityDbContext
     }
 
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
+    public DbSet<Excursion> Excursions { get; set; }
 }

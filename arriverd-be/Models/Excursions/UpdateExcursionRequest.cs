@@ -1,0 +1,16 @@
+﻿namespace arriverd_be.Models.Excursions;
+
+public class UpdateExcursionRequest
+{
+    public string? Name { get; set; }
+    public string? Destination { get; set; }
+    public string? DepartureLocation { get; set; }
+    public string? DestinationLocation { get; set; }
+    public short? MaxReservations { get; set; }
+    public short? MinReservations { get; set; }
+    public decimal? Price { get; set; }
+    public string? Description { get; set; }
+    public string? EquipmentDetails { get; set; }
+    public bool? IsPublic { get; set; }
+    public bool? IsActive { get; set; }
+}
