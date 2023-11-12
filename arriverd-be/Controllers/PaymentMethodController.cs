@@ -1,10 +1,12 @@
 using arriverd_be.Data;
 using arriverd_be.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace arriverd_be.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/payment-methods")]
 public class PaymentMethodController : ControllerBase
 {
