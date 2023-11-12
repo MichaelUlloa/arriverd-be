@@ -17,7 +17,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ArriveDbContext>()
     .AddDefaultTokenProviders();
 
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -69,6 +68,7 @@ builder.Services.AddAuthentication(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 var app = builder.Build();
 
