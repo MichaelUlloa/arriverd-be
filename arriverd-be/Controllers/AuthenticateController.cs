@@ -63,7 +63,8 @@ public class AuthenticateController : Controller
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
         var userExists = await _userManager.FindByNameAsync(model.Username);
-        if (userExists != null)
+
+        if (userExists is not null)
             return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
         IdentityUser user = new()
@@ -72,12 +73,12 @@ public class AuthenticateController : Controller
             SecurityStamp = Guid.NewGuid().ToString(),
             UserName = model.Username
         };
-
+        
         var result = await _userManager.CreateAsync(user, model.Password);
         if (!result.Succeeded)
-            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Check user details and try again." });
 
-        return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+        return Ok(new Response { Status = "Success", Message = "User created successfully." });
     }
 
     [HttpPost]
@@ -97,7 +98,7 @@ public class AuthenticateController : Controller
         var result = await _userManager.CreateAsync(user, model.Password);
 
         if (!result.Succeeded)
-            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+            return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed. Check user details and try again." });
 
         if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
             await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
