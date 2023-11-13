@@ -73,7 +73,7 @@ public class AuthenticateController : Controller
             SecurityStamp = Guid.NewGuid().ToString(),
             UserName = model.Username
         };
-        
+
         var result = await _userManager.CreateAsync(user, model.Password);
         if (!result.Succeeded)
             return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Check user details and try again." });

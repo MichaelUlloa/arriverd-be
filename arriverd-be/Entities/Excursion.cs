@@ -14,4 +14,7 @@ public class Excursion
     public string? EquipmentDetails { get; set; }
     public bool? IsPublic { get; set; }
     public bool? IsActive { get; set; }
+
+    public List<Schedule> Schedules { get; set; } = new();
+    public List<Image> Images { get; set; } = new();
 }
