@@ -17,4 +17,5 @@ public class Excursion
 
     public List<Schedule> Schedules { get; set; } = new();
     public List<Image> Images { get; set; } = new();
+    public List<FAQ> FAQs { get; set; } = new();
 }

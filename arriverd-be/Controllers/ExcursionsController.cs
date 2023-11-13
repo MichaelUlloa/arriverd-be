@@ -1,7 +1,6 @@
 ﻿using arriverd_be.Data;
 using arriverd_be.Entities;
 using arriverd_be.Models.Excursions;
-using arriverd_be.Models.Reservations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -66,9 +65,9 @@ public class ExcursionsController : BaseApiController
     [HttpGet("{id}/schedules")]
     public async Task<ActionResult<IEnumerable<Schedule>>> GetAllSchedules(int id)
     {
-        var reservation = await _dbContext.Excursions.FindAsync(id);
+        var excursion = await _dbContext.Excursions.FindAsync(id);
 
-        if (reservation is null)
+        if (excursion is null)
             return NotFound();
 
         return await _dbContext
@@ -81,13 +80,13 @@ public class ExcursionsController : BaseApiController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AddSchedule(int id, CreateScheduleRequest request)
     {
-        var reservation = await _dbContext.Excursions.FindAsync(id);
+        var excursion = await _dbContext.Excursions.FindAsync(id);
 
-        if (reservation is null)
+        if (excursion is null)
             return BadRequest("The excursion must have a valid id.");
 
         var schedule = request.ToSchedule();
-        reservation.Schedules.Add(schedule);
+        excursion.Schedules.Add(schedule);
 
         await _dbContext.SaveChangesAsync();
 
@@ -111,12 +110,29 @@ public class ExcursionsController : BaseApiController
         return NoContent();
     }
 
+    [HttpDelete("{id}/schedules/{scheduleId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteSchedule(int id, int scheduleId)
+    {
+        var schedule = await _dbContext.Schedules.FirstOrDefaultAsync(x => x.ExcursionId == id && x.Id == scheduleId);
+
+        if (schedule is null)
+            return NotFound();
+
+        _dbContext.Schedules.Remove(schedule);
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
     [HttpGet("{id}/images")]
     public async Task<ActionResult<IEnumerable<Image>>> GetAllImages(int id)
     {
-        var reservation = await _dbContext.Excursions.FindAsync(id);
+        var excursion = await _dbContext.Excursions.FindAsync(id);
 
-        if (reservation is null)
+        if (excursion is null)
             return NotFound();
 
         return await _dbContext
@@ -129,12 +145,12 @@ public class ExcursionsController : BaseApiController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AddImage(int id, CreateImageRequest request)
     {
-        var reservation = await _dbContext.Excursions.FindAsync(id);
+        var excursion = await _dbContext.Excursions.FindAsync(id);
 
-        if (reservation is null)
+        if (excursion is null)
             return BadRequest("The excursion must have a valid id.");
 
-        reservation.Images.Add(new Image()
+        excursion.Images.Add(new Image()
         {
             Data = request.Data,
         });
@@ -148,7 +164,7 @@ public class ExcursionsController : BaseApiController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateImage(int id, int imageId)
+    public async Task<IActionResult> DeleteImage(int id, int imageId)
     {
         var image = await _dbContext.Images.FirstOrDefaultAsync(x => x.ExcursionId == id && x.Id == imageId);
 
@@ -156,6 +172,71 @@ public class ExcursionsController : BaseApiController
             return NotFound();
 
         _dbContext.Images.Remove(image);
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpGet("{id}/faq")]
+    public async Task<ActionResult<IEnumerable<FAQ>>> GetAllFAQs(int id)
+    {
+        var excursion = await _dbContext.Excursions.FindAsync(id);
+
+        if (excursion is null)
+            return NotFound();
+
+        return await _dbContext
+            .FAQs
+            .Where(x => x.ExcursionId == id)
+            .ToListAsync();
+    }
+
+    [HttpPost("{id}/faq")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> AddFAQ(int id, CreateFAQRequest request)
+    {
+        var excursion = await _dbContext.Excursions.FindAsync(id);
+
+        if (excursion is null)
+            return BadRequest("The excursion must have a valid id.");
+
+        var faq = request.ToFAQ();
+        excursion.FAQs.Add(faq);
+
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpPut("{id}/faq/{faqId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateFAQ(int id, int faqId, UpdateFAQRequest request)
+    {
+        var faq = await _dbContext.FAQs.FirstOrDefaultAsync(x => x.ExcursionId == id && x.Id == faqId);
+
+        if (faq is null)
+            return NotFound();
+
+        _dbContext.Entry(faq).CurrentValues.SetValues(request);
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}/faq/{faqId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteFAQ(int id, int faqId)
+    {
+        var faq = await _dbContext.FAQs.FirstOrDefaultAsync(x => x.ExcursionId == id && x.Id == faqId);
+
+        if (faq is null)
+            return NotFound();
+
+        _dbContext.FAQs.Remove(faq);
         await _dbContext.SaveChangesAsync();
 
         return NoContent();

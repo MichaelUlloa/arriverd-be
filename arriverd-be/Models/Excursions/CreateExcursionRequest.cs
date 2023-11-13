@@ -41,5 +41,4 @@ public class CreateExcursionRequest : IValidatableObject
             IsPublic = IsPublic,
             IsActive = IsActive,
         };
-
 }

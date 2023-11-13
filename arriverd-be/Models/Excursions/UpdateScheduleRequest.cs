@@ -1,4 +1,4 @@
-﻿namespace arriverd_be.Models.Reservations;
+﻿namespace arriverd_be.Models.Excursions;
 
 public class UpdateScheduleRequest : CreateScheduleRequest
 {
