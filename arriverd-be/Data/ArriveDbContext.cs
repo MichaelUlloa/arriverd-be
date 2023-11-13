@@ -1,6 +1,7 @@
 ﻿using arriverd_be.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace arriverd_be.Data;
 
@@ -13,4 +14,11 @@ public class ArriveDbContext : IdentityDbContext
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
     public DbSet<Excursion> Excursions { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
 }

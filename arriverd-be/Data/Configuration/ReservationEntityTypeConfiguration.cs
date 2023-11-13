@@ -4,11 +4,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace arriverd_be.Data.Configuration;
 
-public class ReservationEntityTypeConfiguration : IEntityTypeConfiguration<Reservation>
+public class ExcursionEntityTypeConfiguration : IEntityTypeConfiguration<Excursion>
 {
-    public void Configure(EntityTypeBuilder<Reservation> builder)
+    public void Configure(EntityTypeBuilder<Excursion> builder)
     {
         builder
-            .HasKey(p => p.Excursion);
+            .Property(p => p.Price)
+            .HasColumnType("decimal(18,2)");
     }
 }
