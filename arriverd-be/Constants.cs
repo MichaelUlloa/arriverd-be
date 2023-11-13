@@ -19,4 +19,6 @@ public static class Constants
             Type = ReferenceType.SecurityScheme
         }
     };
+
+    public const string DECIMAL_MAX_VALUE = "79228162514264337593543950335m";
 }
