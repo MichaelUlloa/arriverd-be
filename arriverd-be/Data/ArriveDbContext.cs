@@ -17,6 +17,7 @@ public class ArriveDbContext : IdentityDbContext
     public DbSet<Schedule> Schedules { get; set; }
     public DbSet<Image> Images { get; set; }
     public DbSet<FAQ> FAQs { get; set; }
+    public DbSet<Service> Services { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

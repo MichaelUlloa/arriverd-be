@@ -241,4 +241,72 @@ public class ExcursionsController : BaseApiController
 
         return NoContent();
     }
+
+
+    [HttpGet("{id}/service")]
+    public async Task<ActionResult<IEnumerable<Service>>> GetAllServices(int id)
+    {
+        var excursion = await _dbContext.Excursions.FindAsync(id);
+
+        if (excursion is null)
+            return NotFound();
+
+        return await _dbContext
+            .Services
+            .Where(x => x.ExcursionId == id)
+            .ToListAsync();
+    }
+
+    [HttpPost("{id}/service")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> AddService(int id, CreateServiceRequest request)
+    {
+        var excursion = await _dbContext.Excursions.FindAsync(id);
+
+        if (excursion is null)
+            return BadRequest("The excursion must have a valid id.");
+
+        excursion.Services.Add(new()
+        {
+            Name = request.Name,
+        });
+
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpPut("{id}/service/{serviceId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateService(int id, int serviceId, UpdateServiceRequest request)
+    {
+        var service = await _dbContext.Services.FirstOrDefaultAsync(x => x.ExcursionId == id && x.Id == serviceId);
+
+        if (service is null)
+            return NotFound();
+
+        service.Name = request.Name;
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}/service/{serviceId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteService(int id, int serviceId)
+    {
+        var service = await _dbContext.Services.FirstOrDefaultAsync(x => x.ExcursionId == id && x.Id == serviceId);
+
+        if (service is null)
+            return NotFound();
+
+        _dbContext.Services.Remove(service);
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
