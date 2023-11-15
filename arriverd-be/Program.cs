@@ -56,6 +56,16 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 // Middlewares
 builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
