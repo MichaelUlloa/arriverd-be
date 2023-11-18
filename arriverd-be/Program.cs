@@ -4,15 +4,16 @@ using arriverd_be.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // EF Core
 builder.Services.AddDbContext<ArriveDbContext>(options
-    => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    => options.UseSqlServer("Data Source=arriverd.database.windows.net;Initial Catalog=arriverd;Authentication=Active Directory Default;Encrypt=True;"));
+    //=> options.UseSqlServer("Server=LTP-PCN-05\\PRIMEDEV03;Database=arriverd;User Id=sa;Password=fx=25tb;TrustServerCertificate=True"));
 
 // Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
@@ -27,6 +28,19 @@ builder.Services.AddSwaggerGen(options =>
 
     options.AddSecurityDefinition(Constants.JWT_SECURITY_SCHEMA.Reference.Id, Constants.JWT_SECURITY_SCHEMA);
 });
+
+// Application Insights
+if (builder.Environment.IsDevelopment())
+{
+    builder.Logging.AddApplicationInsights(
+            configureTelemetryConfiguration: (config) =>
+                //config.ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"],
+                config.ConnectionString = "InstrumentationKey=aec9148c-b1cd-4d98-9220-13a5dd39689a;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/",
+                configureApplicationInsightsLoggerOptions: (_) => { }
+        );
+
+    builder.Logging.AddFilter<ApplicationInsightsLoggerProvider>("arriverd-be", LogLevel.Trace);
+}
 
 // Authenticaton
 builder.Services.AddAuthentication(options =>
@@ -70,8 +84,6 @@ var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<ArriveDbContext>();
-context.Database.EnsureCreated();
-await context.Database.MigrateAsync();
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
