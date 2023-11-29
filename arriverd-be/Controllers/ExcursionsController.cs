@@ -16,9 +16,17 @@ public class ExcursionsController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IEnumerable<ListExcursionModel>> GetAll()
+    public async Task<IEnumerable<ListExcursionModel>> GetAll([FromQuery(Name = "has_available_seats")] bool? hasAvailableSeats)
     {
-        var excursions = await _dbContext.Excursions.ToListAsync();
+        var query = _dbContext.Excursions.AsQueryable();
+
+        if (hasAvailableSeats is true)
+            query = query.Where(x => x.AvailableSeats > 0);
+        else if (hasAvailableSeats is false)
+            query = query.Where(x => x.AvailableSeats == 0);
+
+        var excursions = await query.ToListAsync();
+
         return excursions.Select(x => new ListExcursionModel(x));
     }
 
@@ -195,7 +203,6 @@ public class ExcursionsController : BaseApiController
 
         return NoContent();
     }
-
 
     [HttpGet("{id}/service")]
     public async Task<ActionResult<IEnumerable<Service>>> GetAllServices(int id)

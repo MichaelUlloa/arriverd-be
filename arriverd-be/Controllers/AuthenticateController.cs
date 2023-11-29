@@ -119,14 +119,12 @@ public class AuthenticateController : Controller
     {
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
 
-        var token = new JwtSecurityToken(
+        return new JwtSecurityToken(
             issuer: _configuration["JWT:ValidIssuer"],
             audience: _configuration["JWT:ValidAudience"],
             claims: authClaims,
             expires: DateTime.Now.AddHours(3),
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );
-
-        return token;
     }
 }
