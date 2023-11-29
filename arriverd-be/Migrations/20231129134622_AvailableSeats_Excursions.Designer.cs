@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using arriverd_be.Data;
 
@@ -11,9 +12,11 @@ using arriverd_be.Data;
 namespace arriverd_be.Migrations
 {
     [DbContext(typeof(ArriveDbContext))]
-    partial class ArriveDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231129134622_AvailableSeats_Excursions")]
+    partial class AvailableSeats_Excursions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,9 +237,6 @@ namespace arriverd_be.Migrations
                     b.Property<short?>("Capacity")
                         .HasColumnType("smallint");
 
-                    b.Property<DateTime?>("Departure")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("DepartureLocation")
                         .HasColumnType("nvarchar(max)");
 
@@ -258,17 +258,11 @@ namespace arriverd_be.Migrations
                     b.Property<bool?>("IsPublic")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("Meeting")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("Return")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -386,6 +380,36 @@ namespace arriverd_be.Migrations
                     b.ToTable("Reservations");
                 });
 
+            modelBuilder.Entity("arriverd_be.Entities.Schedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ExcursionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Itinerary")
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<short?>("Seats")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExcursionId");
+
+                    b.ToTable("Schedules");
+                });
+
             modelBuilder.Entity("arriverd_be.Entities.Service", b =>
                 {
                     b.Property<int?>("Id")
@@ -496,6 +520,13 @@ namespace arriverd_be.Migrations
                     b.Navigation("Excursion");
                 });
 
+            modelBuilder.Entity("arriverd_be.Entities.Schedule", b =>
+                {
+                    b.HasOne("arriverd_be.Entities.Excursion", null)
+                        .WithMany("Schedules")
+                        .HasForeignKey("ExcursionId");
+                });
+
             modelBuilder.Entity("arriverd_be.Entities.Service", b =>
                 {
                     b.HasOne("arriverd_be.Entities.Excursion", null)
@@ -508,6 +539,8 @@ namespace arriverd_be.Migrations
                     b.Navigation("FAQs");
 
                     b.Navigation("Images");
+
+                    b.Navigation("Schedules");
 
                     b.Navigation("Services");
                 });

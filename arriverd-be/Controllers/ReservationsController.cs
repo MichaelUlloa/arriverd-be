@@ -3,7 +3,6 @@ using arriverd_be.Entities;
 using arriverd_be.Models.Reservations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace arriverd_be.Controllers;
 
@@ -49,6 +48,10 @@ public class ReservationsController : BaseApiController
         if (excursion is null)
             return BadRequest("The excursion must have a valid id.");
 
+        if (excursion.AvailableSeats < request.Quantity)
+            return BadRequest("The reservation quantity exceeds the excursion's available seats.");
+
+        excursion.AvailableSeats -= request.Quantity;
         reservation.Excursion = excursion;
 
         await _dbContext.Reservations.AddAsync(reservation);
@@ -74,6 +77,16 @@ public class ReservationsController : BaseApiController
             return BadRequest("The excursion must have a valid id.");
 
         reservation.Excursion = excursion;
+
+        short quantity = (short)(reservation.Quantity - request.Quantity);
+
+        if (quantity < 0)
+            return BadRequest("The quantity cannot be less than ");
+
+        if (quantity is not 0)
+        {
+            excursion.AvailableSeats -= quantity;
+        }
 
         _dbContext.Entry(reservation).CurrentValues.SetValues(request);
         await _dbContext.SaveChangesAsync();

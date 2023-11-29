@@ -16,21 +16,24 @@ public class ExcursionsController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Excursion>> GetAll()
-        => await _dbContext.Excursions.ToListAsync();
+    public async Task<IEnumerable<ListExcursionModel>> GetAll()
+    {
+        var excursions = await _dbContext.Excursions.ToListAsync();
+        return excursions.Select(x => new ListExcursionModel(x));
+    }
 
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Excursion>> GetById(int id)
+    public async Task<ActionResult<ExcursionModel>> GetById(int id)
     {
         var excursion = await _dbContext.Excursions.FindAsync(id);
 
         if (excursion is null)
             return NotFound();
 
-        return excursion;
+        return new ExcursionModel(excursion);
     }
 
     [HttpPost]
@@ -56,72 +59,23 @@ public class ExcursionsController : BaseApiController
         if (excursion is null)
             return NotFound();
 
+        short capacity = (short)(request.Capacity - excursion.Capacity);
+
+        if (capacity is not 0)
+        {
+            short newQuantity = (short)(excursion.AvailableSeats + capacity);
+
+            if (newQuantity < 0)
+                return BadRequest("The capacity cannot be changed to less than current reservations.");
+
+            excursion.AvailableSeats = newQuantity;
+        }
+
         _dbContext.Entry(excursion).CurrentValues.SetValues(request);
-        await _dbContext.SaveChangesAsync();
+        excursion.Meeting = request.Schedule.Meeting;
+        excursion.Departure = request.Schedule.Departure;
+        excursion.Return = request.Schedule.Return;
 
-        return NoContent();
-    }
-
-    [HttpGet("{id}/schedules")]
-    public async Task<ActionResult<IEnumerable<Schedule>>> GetAllSchedules(int id)
-    {
-        var excursion = await _dbContext.Excursions.FindAsync(id);
-
-        if (excursion is null)
-            return NotFound();
-
-        return await _dbContext
-            .Schedules
-            .Where(x => x.ExcursionId == id)
-            .ToListAsync();
-    }
-
-    [HttpPost("{id}/schedules")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> AddSchedule(int id, CreateScheduleRequest request)
-    {
-        var excursion = await _dbContext.Excursions.FindAsync(id);
-
-        if (excursion is null)
-            return BadRequest("The excursion must have a valid id.");
-
-        var schedule = request.ToSchedule();
-        excursion.Schedules.Add(schedule);
-
-        await _dbContext.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    [HttpPut("{id}/schedules/{scheduleId}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesErrorResponseType(typeof(void))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateSchedule(int id, int scheduleId, UpdateScheduleRequest request)
-    {
-        var schedule = await _dbContext.Schedules.FirstOrDefaultAsync(x => x.ExcursionId == id && x.Id == scheduleId);
-
-        if (schedule is null)
-            return NotFound();
-
-        _dbContext.Entry(schedule).CurrentValues.SetValues(request);
-        await _dbContext.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    [HttpDelete("{id}/schedules/{scheduleId}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesErrorResponseType(typeof(void))]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteSchedule(int id, int scheduleId)
-    {
-        var schedule = await _dbContext.Schedules.FirstOrDefaultAsync(x => x.ExcursionId == id && x.Id == scheduleId);
-
-        if (schedule is null)
-            return NotFound();
-
-        _dbContext.Schedules.Remove(schedule);
         await _dbContext.SaveChangesAsync();
 
         return NoContent();

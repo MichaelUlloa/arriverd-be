@@ -14,7 +14,6 @@ public class ArriveDbContext : IdentityDbContext
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
     public DbSet<Excursion> Excursions { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
-    public DbSet<Schedule> Schedules { get; set; }
     public DbSet<Image> Images { get; set; }
     public DbSet<FAQ> FAQs { get; set; }
     public DbSet<Service> Services { get; set; }
