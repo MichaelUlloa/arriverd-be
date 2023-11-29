@@ -3,6 +3,7 @@ using arriverd_be.Entities;
 using arriverd_be.Models.Reservations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace arriverd_be.Controllers;
 
@@ -42,7 +43,6 @@ public class ReservationsController : BaseApiController
     public async Task<IActionResult> Create(CreateReservationRequest request)
     {
         var reservation = request.ToReservation();
-
         var excursion = await _dbContext.Excursions.FindAsync(request.ExcursionId);
 
         if (excursion is null)
@@ -53,6 +53,7 @@ public class ReservationsController : BaseApiController
 
         excursion.AvailableSeats -= request.Quantity;
         reservation.Excursion = excursion;
+        reservation.UserId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         await _dbContext.Reservations.AddAsync(reservation);
         await _dbContext.SaveChangesAsync();

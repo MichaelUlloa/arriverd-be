@@ -10,7 +10,7 @@ public class ListExcursionModel
         Name = excursion.Name;
         Schedule = new()
         {
-            Departure  = excursion.Departure,
+            Departure = excursion.Departure,
             Meeting = excursion.Meeting,
             Return = excursion.Return,
         };

@@ -5,4 +5,5 @@ public class Reservation
     public int? Id { get; set; }
     public Excursion? Excursion { get; set; }
     public short? Quantity { get; set; }
+    public string? UserId { get; set; }
 }

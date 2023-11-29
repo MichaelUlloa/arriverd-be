@@ -5,7 +5,7 @@ namespace arriverd_be;
 
 public static class Constants
 {
-    public static OpenApiSecurityScheme JWT_SECURITY_SCHEMA = new OpenApiSecurityScheme()
+    public static OpenApiSecurityScheme JWT_SECURITY_SCHEMA = new()
     {
         BearerFormat = "JWT",
         Name = "JWT Authentication",
