@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using arriverd_be.Data;
 
@@ -11,9 +12,11 @@ using arriverd_be.Data;
 namespace arriverd_be.Migrations
 {
     [DbContext(typeof(ArriveDbContext))]
-    partial class ArriveDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231130025452_Image_ImageId")]
+    partial class Image_ImageId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

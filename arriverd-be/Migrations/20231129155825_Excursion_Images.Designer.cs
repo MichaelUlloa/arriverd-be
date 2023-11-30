@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using arriverd_be.Data;
 
@@ -11,9 +12,11 @@ using arriverd_be.Data;
 namespace arriverd_be.Migrations
 {
     [DbContext(typeof(ArriveDbContext))]
-    partial class ArriveDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231129155825_Excursion_Images")]
+    partial class Excursion_Images
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -301,22 +304,11 @@ namespace arriverd_be.Migrations
 
             modelBuilder.Entity("arriverd_be.Entities.Image", b =>
                 {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
-
                     b.Property<int?>("ExcursionId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("ImageId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
 
                     b.HasIndex("ExcursionId");
 

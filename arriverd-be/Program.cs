@@ -14,6 +14,8 @@ builder.Services.AddDbContext<ArriveDbContext>(options
     //=> options.UseSqlServer("Data Source=arriverd.database.windows.net;Initial Catalog=arriverd;Authentication=Active Directory Default;Encrypt=True;"));
     => options.UseSqlServer("Server=LTP-PCN-05\\PRIMEDEV03;Database=arriverd;User Id=sa;Password=fx=25tb;TrustServerCertificate=True"));
 
+builder.Services.AddScoped<IBlobService, BlobService>();
+
 // Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ArriveDbContext>()

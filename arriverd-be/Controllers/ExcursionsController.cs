@@ -1,6 +1,7 @@
 ﻿using arriverd_be.Data;
 using arriverd_be.Entities;
 using arriverd_be.Models.Excursions;
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,12 @@ namespace arriverd_be.Controllers;
 public class ExcursionsController : BaseApiController
 {
     private readonly ArriveDbContext _dbContext;
+    private readonly IBlobService _blobService;
 
-    public ExcursionsController(ArriveDbContext dbContext)
+    public ExcursionsController(ArriveDbContext dbContext, IBlobService blobService)
     {
         _dbContext = dbContext;
+        _blobService = blobService;
     }
 
     [HttpGet]
@@ -90,17 +93,18 @@ public class ExcursionsController : BaseApiController
     }
 
     [HttpGet("{id}/images")]
-    public async Task<ActionResult<IEnumerable<Image>>> GetAllImages(int id)
+    public async Task<ActionResult<ListImageModel>> GetAllImages(int id)
     {
         var excursion = await _dbContext.Excursions.FindAsync(id);
 
         if (excursion is null)
             return NotFound();
 
-        return await _dbContext
-            .Images
+        var images = await _dbContext.Images
             .Where(x => x.ExcursionId == id)
             .ToListAsync();
+
+        return Ok(images.Select(x => new ListImageModel(x)));
     }
 
     [HttpPost("{id}/images")]
@@ -112,9 +116,13 @@ public class ExcursionsController : BaseApiController
         if (excursion is null)
             return BadRequest("La excursión debe tener un id válido.");
 
-        excursion.Images.Add(new Image()
+        var response = await _blobService.UploadImageAsync(request.Data);
+
+        await _dbContext.Images.AddAsync(new()
         {
-            Data = request.Data,
+            Excursion = excursion,
+            Url = response.ImageUri,
+            ImageId = response.ImageId,
         });
 
         await _dbContext.SaveChangesAsync();
@@ -132,6 +140,8 @@ public class ExcursionsController : BaseApiController
 
         if (image is null)
             return NotFound();
+
+        await _blobService.DeleteImageAsync((Guid)image.ImageId!);
 
         _dbContext.Images.Remove(image);
         await _dbContext.SaveChangesAsync();
@@ -225,7 +235,7 @@ public class ExcursionsController : BaseApiController
         var excursion = await _dbContext.Excursions.FindAsync(id);
 
         if (excursion is null)
-            return BadRequest("The excursion must have a valid id.");
+            return BadRequest("La excursión debe tener una id válida.");
 
         excursion.Services.Add(new()
         {

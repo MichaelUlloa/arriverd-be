@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using arriverd_be.Data;
 
@@ -11,9 +12,11 @@ using arriverd_be.Data;
 namespace arriverd_be.Migrations
 {
     [DbContext(typeof(ArriveDbContext))]
-    partial class ArriveDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231130024002_Image_IdPK")]
+    partial class Image_IdPK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -309,9 +312,6 @@ namespace arriverd_be.Migrations
 
                     b.Property<int?>("ExcursionId")
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("ImageId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
