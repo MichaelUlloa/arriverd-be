@@ -48,14 +48,14 @@ public class InvoicesController : BaseApiController
         var reservation = await _dbContext.Reservations.FindAsync(request.ReservationId);
 
         if (reservation is null)
-            return BadRequest("The reservation must have a valid id.");
+            return BadRequest("La reservación debe tener un id válido.");
 
         invoice.Reservation = reservation;
 
         var paymentMethod = await _dbContext.PaymentMethods.FindAsync(request.PaymentMethodId);
 
         if (paymentMethod is null)
-            return BadRequest("The payment method must have a valid id.");
+            return BadRequest("El método de pago debe tener un id válido.");
 
         invoice.PaymentMethod = paymentMethod;
 

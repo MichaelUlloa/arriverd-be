@@ -74,7 +74,7 @@ public class ExcursionsController : BaseApiController
             short newQuantity = (short)(excursion.AvailableSeats + capacity);
 
             if (newQuantity < 0)
-                return BadRequest("The capacity cannot be changed to less than current reservations.");
+                return BadRequest("La capacidad no puede cambiarse a un valor menor que las reservaciones ya hechas.");
 
             excursion.AvailableSeats = newQuantity;
         }
@@ -110,7 +110,7 @@ public class ExcursionsController : BaseApiController
         var excursion = await _dbContext.Excursions.FindAsync(id);
 
         if (excursion is null)
-            return BadRequest("The excursion must have a valid id.");
+            return BadRequest("La excursión debe tener un id válido.");
 
         excursion.Images.Add(new Image()
         {
@@ -160,7 +160,7 @@ public class ExcursionsController : BaseApiController
         var excursion = await _dbContext.Excursions.FindAsync(id);
 
         if (excursion is null)
-            return BadRequest("The excursion must have a valid id.");
+            return BadRequest("La excursión debe tener un id válido.");
 
         var faq = request.ToFAQ();
         excursion.FAQs.Add(faq);

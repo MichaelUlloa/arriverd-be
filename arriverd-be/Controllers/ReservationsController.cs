@@ -46,10 +46,10 @@ public class ReservationsController : BaseApiController
         var excursion = await _dbContext.Excursions.FindAsync(request.ExcursionId);
 
         if (excursion is null)
-            return BadRequest("The excursion must have a valid id.");
+            return BadRequest("La excursión debe tener un id válido.");
 
         if (excursion.AvailableSeats < request.Quantity)
-            return BadRequest("The reservation quantity exceeds the excursion's available seats.");
+            return BadRequest("La cantidad de reservas supera el número de asientos disponibles para la excursión.");
 
         excursion.AvailableSeats -= request.Quantity;
         reservation.Excursion = excursion;
@@ -75,16 +75,17 @@ public class ReservationsController : BaseApiController
         var excursion = await _dbContext.Excursions.FindAsync(request.ExcursionId);
 
         if (excursion is null)
-            return BadRequest("The excursion must have a valid id.");
+            return BadRequest("La excursión debe tener un id válido.");
 
         reservation.Excursion = excursion;
 
         short quantity = (short)(reservation.Quantity - request.Quantity);
 
         if (quantity < 0)
-            return BadRequest("The quantity cannot be less than ");
-
-        if (quantity is not 0)
+        {
+            excursion.AvailableSeats += quantity;
+        }
+        else if (quantity is not 0)
         {
             excursion.AvailableSeats -= quantity;
         }
