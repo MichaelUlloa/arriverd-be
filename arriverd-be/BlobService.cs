@@ -1,8 +1,6 @@
-﻿using Azure.Identity;
-using Azure.Storage.Blobs;
+﻿using Azure.Storage.Blobs;
 
 namespace arriverd_be;
-
 
 public class BlobService : IBlobService
 {

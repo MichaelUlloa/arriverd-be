@@ -23,6 +23,7 @@ public class ListExcursionModel
         Price = excursion.Price;
         Description = excursion.Description;
         EquipmentDetails = excursion.EquipmentDetails;
+        PrimaryImageUrl = excursion.Images?.FirstOrDefault()?.Url;
         IsPublic = excursion.IsPublic;
         IsActive = excursion.IsActive;
     }
@@ -39,6 +40,7 @@ public class ListExcursionModel
     public decimal? Price { get; set; }
     public string? Description { get; set; }
     public string? EquipmentDetails { get; set; }
+    public string? PrimaryImageUrl { get; set; }
     public bool? IsPublic { get; set; }
     public bool? IsActive { get; set; }
 

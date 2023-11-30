@@ -18,6 +18,7 @@ public class Excursion
     public bool? IsPublic { get; set; }
     public bool? IsActive { get; set; }
 
+    public List<Image>? Images { get; set; }
     public List<FAQ> FAQs { get; set; } = new();
     public List<Service> Services { get; set; } = new();
 }

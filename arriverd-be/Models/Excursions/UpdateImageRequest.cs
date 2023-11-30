@@ -2,10 +2,9 @@
 
 namespace arriverd_be.Models.Excursions;
 
-public class CreateImageRequest
+public class UpdateImageRequest
 {
     [Required]
-    public byte[] Data { get; set; } = null!;
     [Range(0, int.MaxValue)]
-    public int? Order { get; set; }
+    public int Order { get; set; }
 }

@@ -1,9 +1,11 @@
 ﻿using arriverd_be.Data;
 using arriverd_be.Entities;
+using arriverd_be.Migrations;
 using arriverd_be.Models.Excursions;
 using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace arriverd_be.Controllers;
 
@@ -22,6 +24,8 @@ public class ExcursionsController : BaseApiController
     public async Task<IEnumerable<ListExcursionModel>> GetAll([FromQuery(Name = "has_available_seats")] bool? hasAvailableSeats)
     {
         var query = _dbContext.Excursions.AsQueryable();
+
+        query = query.Include(x => x.Images!.OrderBy(i => i.Order).Take(1));
 
         if (hasAvailableSeats is true)
             query = query.Where(x => x.AvailableSeats > 0);
@@ -102,6 +106,7 @@ public class ExcursionsController : BaseApiController
 
         var images = await _dbContext.Images
             .Where(x => x.ExcursionId == id)
+            .OrderBy(x => x.Order)
             .ToListAsync();
 
         return Ok(images.Select(x => new ListImageModel(x)));
@@ -118,12 +123,42 @@ public class ExcursionsController : BaseApiController
 
         var response = await _blobService.UploadImageAsync(request.Data);
 
+        int order = request.Order ?? 0;
+
+        if (order is 0)
+        {
+            var lastImage = await _dbContext.Images
+                .OrderByDescending(x => x.Order)
+                .FirstOrDefaultAsync();
+
+            order = (lastImage?.Order ?? 0) + 1;
+        }
+
         await _dbContext.Images.AddAsync(new()
         {
             Excursion = excursion,
             Url = response.ImageUri,
             ImageId = response.ImageId,
+            Order = order,
         });
+
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpPut("{id}/image/{imageId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesErrorResponseType(typeof(void))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateImage(int id, int imageId, UpdateImageRequest request)
+    {
+        var image = await _dbContext.Images.FirstOrDefaultAsync(x => x.ExcursionId == id && x.Id == imageId);
+
+        if (image is null)
+            return NotFound();
+
+        image.Order = request.Order;
 
         await _dbContext.SaveChangesAsync();
 
