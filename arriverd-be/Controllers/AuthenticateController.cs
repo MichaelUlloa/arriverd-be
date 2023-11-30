@@ -42,6 +42,7 @@ public class AuthenticateController : Controller
         {
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Name, user.UserName),
+            new(ClaimTypes.Email, user.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         };
 
@@ -55,7 +56,10 @@ public class AuthenticateController : Controller
         return Ok(new
         {
             token = new JwtSecurityTokenHandler().WriteToken(token),
-            expiration = token.ValidTo
+            expiration = token.ValidTo,
+            id = user.Id,
+            name = user.UserName,
+            email = user.Email,
         });
     }
 
