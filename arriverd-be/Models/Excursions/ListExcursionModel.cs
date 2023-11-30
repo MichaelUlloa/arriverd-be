@@ -19,6 +19,7 @@ public class ListExcursionModel
         DestinationLocation = excursion.DestinationLocation;
         Capacity = excursion.Capacity;
         AvailableSeats = excursion.AvailableSeats;
+        Passengers = (short?)(excursion.Capacity - excursion.AvailableSeats);
         Price = excursion.Price;
         Description = excursion.Description;
         EquipmentDetails = excursion.EquipmentDetails;
@@ -34,6 +35,7 @@ public class ListExcursionModel
     public string? DestinationLocation { get; set; }
     public short? Capacity { get; set; }
     public short AvailableSeats { get; set; }
+    public short? Passengers { get; set; }
     public decimal? Price { get; set; }
     public string? Description { get; set; }
     public string? EquipmentDetails { get; set; }
