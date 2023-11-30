@@ -43,7 +43,9 @@ public class ExcursionsController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ExcursionModel>> GetById(int id)
     {
-        var excursion = await _dbContext.Excursions.FindAsync(id);
+        var excursion = await _dbContext.Excursions
+            .Include(x => x.Images)
+            .FirstOrDefaultAsync(x => x.Id == id);
 
         if (excursion is null)
             return NotFound();
@@ -58,9 +60,39 @@ public class ExcursionsController : BaseApiController
         var excursion = request.ToExcursion();
 
         await _dbContext.Excursions.AddAsync(excursion);
+
+        foreach (var imageRequest in request.Images ?? new())
+        {
+            await UploadImageAsync(excursion, imageRequest);
+        }
+
         await _dbContext.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetById), new { id = excursion.Id }, null);
+    }
+
+    private async Task UploadImageAsync(Excursion excursion, CreateImageRequest request)
+    {
+        var response = await _blobService.UploadImageAsync(request.Data);
+
+        int order = request.Order ?? 0;
+
+        if (order is 0)
+        {
+            var lastImage = await _dbContext.Images
+                .OrderByDescending(x => x.Order)
+                .FirstOrDefaultAsync();
+
+            order = (lastImage?.Order ?? 0) + 1;
+        }
+
+        await _dbContext.Images.AddAsync(new()
+        {
+            Excursion = excursion,
+            Url = response.ImageUri,
+            ImageId = response.ImageId,
+            Order = order,
+        });
     }
 
     [HttpPut("{id}")]
@@ -121,26 +153,7 @@ public class ExcursionsController : BaseApiController
         if (excursion is null)
             return BadRequest("La excursión debe tener un id válido.");
 
-        var response = await _blobService.UploadImageAsync(request.Data);
-
-        int order = request.Order ?? 0;
-
-        if (order is 0)
-        {
-            var lastImage = await _dbContext.Images
-                .OrderByDescending(x => x.Order)
-                .FirstOrDefaultAsync();
-
-            order = (lastImage?.Order ?? 0) + 1;
-        }
-
-        await _dbContext.Images.AddAsync(new()
-        {
-            Excursion = excursion,
-            Url = response.ImageUri,
-            ImageId = response.ImageId,
-            Order = order,
-        });
+        await UploadImageAsync(excursion, request);
 
         await _dbContext.SaveChangesAsync();
 

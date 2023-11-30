@@ -21,6 +21,8 @@ public class CreateExcursionRequest : IValidatableObject
     public bool? IsPublic { get; set; }
     public bool? IsActive { get; set; }
 
+    public List<CreateImageRequest>? Images { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         // We're using IValidatableObject instead of Range because as of now, Range isn't working propertly.

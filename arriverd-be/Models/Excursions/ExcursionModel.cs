@@ -25,6 +25,8 @@ public class ExcursionModel
         EquipmentDetails = excursion.EquipmentDetails;
         IsPublic = excursion.IsPublic;
         IsActive = excursion.IsActive;
+
+        Images = excursion.Images?.Select(x => new ListImageModel(x));
     }
 
     public int? Id { get; set; }
@@ -41,6 +43,8 @@ public class ExcursionModel
     public string? EquipmentDetails { get; set; }
     public bool? IsPublic { get; set; }
     public bool? IsActive { get; set; }
+
+    public IEnumerable<ListImageModel>? Images { get; set; }
 
     public class ScheduleModel
     {
