@@ -1,4 +1,5 @@
 ﻿using arriverd_be.Entities;
+using arriverd_be.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -11,6 +12,7 @@ public class ArriveDbContext : IdentityDbContext
     {
     }
 
+    public DbSet<User> Users { get; set; }
     public DbSet<PaymentMethod> PaymentMethods { get; set; }
     public DbSet<Excursion> Excursions { get; set; }
     public DbSet<Reservation> Reservations { get; set; }

@@ -1,5 +1,5 @@
 ﻿using arriverd_be.Data;
-using arriverd_be.Entities;
+using arriverd_be.Models;
 using arriverd_be.Models.Reservations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,16 +17,20 @@ public class ReservationsController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Reservation>> GetAll()
-        => await _dbContext.Reservations
+    public async Task<IEnumerable<ListReservationModel>> GetAll()
+    {
+        var reservations = await _dbContext.Reservations
         .Include(x => x.Excursion)
         .ToListAsync();
+
+        return reservations.Select(x => new ListReservationModel(x));
+    }
 
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Reservation>> GetById(int id)
+    public async Task<ActionResult<ReservationModel>> GetById(int id)
     {
         var reservation = await _dbContext.Reservations
             .Include(x => x.Excursion)
@@ -35,7 +39,7 @@ public class ReservationsController : BaseApiController
         if (reservation is null)
             return NotFound();
 
-        return reservation;
+        return new ReservationModel(reservation);
     }
 
     [HttpPost]

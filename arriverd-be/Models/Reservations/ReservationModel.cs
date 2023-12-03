@@ -2,9 +2,9 @@
 
 namespace arriverd_be.Models.Reservations;
 
-public class ListReservationModel
+public class ReservationModel
 {
-    public ListReservationModel(Reservation reservation)
+    public ReservationModel(Reservation reservation)
     {
         Id = reservation.Id;
         Excursion = new()
