@@ -21,6 +21,7 @@ public class ReservationsController : BaseApiController
     {
         var reservations = await _dbContext.Reservations
         .Include(x => x.Excursion)
+        .Include(x => x.PaymentMethod)
         .ToListAsync();
 
         return reservations.Select(x => new ListReservationModel(x));
@@ -34,6 +35,7 @@ public class ReservationsController : BaseApiController
     {
         var reservation = await _dbContext.Reservations
             .Include(x => x.Excursion)
+            .Include(x => x.PaymentMethod)
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (reservation is null)
@@ -57,6 +59,14 @@ public class ReservationsController : BaseApiController
 
         excursion.AvailableSeats -= request.Quantity;
         reservation.Excursion = excursion;
+
+        var paymentMethod = await _dbContext.PaymentMethods.FindAsync(request.PaymentMethodId);
+
+        if (paymentMethod is null)
+            return BadRequest("El método de pago debe tener un id válido.");
+
+        reservation.PaymentMethod = paymentMethod;
+
         reservation.UserId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         await _dbContext.Reservations.AddAsync(reservation);
@@ -82,6 +92,13 @@ public class ReservationsController : BaseApiController
             return BadRequest("La excursión debe tener un id válido.");
 
         reservation.Excursion = excursion;
+
+        var paymentMethod = await _dbContext.PaymentMethods.FindAsync(request.PaymentMethodId);
+
+        if (paymentMethod is null)
+            return BadRequest("El método de pago debe tener un id válido.");
+
+        reservation.PaymentMethod = paymentMethod;
 
         short quantity = (short)(reservation.Quantity - request.Quantity);
 

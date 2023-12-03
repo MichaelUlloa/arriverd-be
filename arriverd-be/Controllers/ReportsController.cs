@@ -15,7 +15,7 @@ public class ReportsController : BaseApiController
     {
         _dbContext = dbContext;
     }
-    
+
     [HttpGet("most-reserved-excursions")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
@@ -46,22 +46,24 @@ public class ReportsController : BaseApiController
             .Where(x => x.Excursion.Meeting > DateTime.Now)
             .OrderBy(x => x.Excursion.Departure)
             .ToListAsync();
-        
+
         return excursions.Select(x => new ExcursionReservationReport(x.Excursion, x.ReservationCount));
     }
-/*
-    [HttpGet("excursion-details")]
+
+    [HttpGet("excursion-summary")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IEnumerable<ExcursionDetailsReport>> ExcursionDetails(
+    public async Task<IEnumerable<ExcursionDetailsReport>> ExcursionSummary(
         [FromQuery(Name = "excursion_id"), Required] int excursionId)
     {
-        var excursions = await _dbContext.Reservations
+        var reservations = await _dbContext.Reservations
             .Include(x => x.User)
+            .Include(x => x.Excursion)
+            .Include(x => x.PaymentMethod)
             .Where(x => x.Excursion!.Id == excursionId)
             .ToListAsync();
 
-        return excursions.Select(x => new ExcursionDetailsReport());
-    }*/
+        return reservations.Select(x => new ExcursionDetailsReport(x));
+    }
 }

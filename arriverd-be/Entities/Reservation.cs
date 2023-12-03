@@ -9,4 +9,5 @@ public class Reservation
     public short? Quantity { get; set; }
     public string? UserId { get; set; }
     public User? User { get; set; }
+    public PaymentMethod? PaymentMethod { get; set; }
 }

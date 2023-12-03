@@ -25,12 +25,18 @@ public class ListReservationModel
             IsPublic = reservation.Excursion?.IsPublic,
             IsActive = reservation.Excursion?.IsActive,
         };
+        PaymentMethod = new()
+        {
+            Id = reservation.PaymentMethod?.Id,
+            Name = reservation.PaymentMethod?.Name,
+        };
         Quantity = reservation.Quantity;
         UserId = reservation.UserId;
     }
 
     public int? Id { get; set; }
     public ExcursionModel? Excursion { get; set; }
+    public PaymentMethodModel? PaymentMethod { get; set; }
     public short? Quantity { get; set; }
     public string? UserId { get; set; }
 
@@ -51,5 +57,11 @@ public class ListReservationModel
         public string? EquipmentDetails { get; set; }
         public bool? IsPublic { get; set; }
         public bool? IsActive { get; set; }
+    }
+
+    public class PaymentMethodModel
+    {
+        public int? Id { get; set; }
+        public string? Name { get; set; }
     }
 }
