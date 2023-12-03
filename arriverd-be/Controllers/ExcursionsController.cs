@@ -1,11 +1,8 @@
 ﻿using arriverd_be.Data;
 using arriverd_be.Entities;
-using arriverd_be.Migrations;
 using arriverd_be.Models.Excursions;
-using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace arriverd_be.Controllers;
 
@@ -21,7 +18,9 @@ public class ExcursionsController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IEnumerable<ListExcursionModel>> GetAll([FromQuery(Name = "has_available_seats")] bool? hasAvailableSeats)
+    public async Task<IEnumerable<ListExcursionModel>> GetAll(
+        [FromQuery(Name = "has_available_seats")] bool? hasAvailableSeats,
+        [FromQuery(Name = "active")] bool? isActive)
     {
         var query = _dbContext.Excursions.AsQueryable();
 
@@ -31,6 +30,9 @@ public class ExcursionsController : BaseApiController
             query = query.Where(x => x.AvailableSeats > 0);
         else if (hasAvailableSeats is false)
             query = query.Where(x => x.AvailableSeats == 0);
+
+        if (isActive is not null)
+            query = query.Where(x => x.IsActive == isActive);
 
         var excursions = await query.ToListAsync();
 
@@ -123,6 +125,20 @@ public class ExcursionsController : BaseApiController
         excursion.Departure = request.Schedule.Departure;
         excursion.Return = request.Schedule.Return;
 
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var excursion = await _dbContext.Excursions.FindAsync(id);
+
+        if (excursion is null)
+            return NotFound();
+
+        excursion.IsActive = false;
         await _dbContext.SaveChangesAsync();
 
         return NoContent();
