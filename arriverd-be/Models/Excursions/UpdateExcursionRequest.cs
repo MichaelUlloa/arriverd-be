@@ -18,7 +18,7 @@ public class UpdateExcursionRequest : IValidatableObject
     public string? Description { get; set; }
     public string? EquipmentDetails { get; set; }
     public bool? IsPublic { get; set; }
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

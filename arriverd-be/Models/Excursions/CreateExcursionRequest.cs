@@ -19,7 +19,7 @@ public class CreateExcursionRequest : IValidatableObject
     public string? Description { get; set; }
     public string? EquipmentDetails { get; set; }
     public bool? IsPublic { get; set; }
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; } = true;
 
     public List<CreateImageRequest>? Images { get; set; }
 
