@@ -38,6 +38,7 @@ public class ReportsController : BaseApiController
     public async Task<IEnumerable<ExcursionReservationReport>> ExcursionReservationsData()
     {
         var excursions = await _dbContext.Excursions
+            .Where(x => x.IsActive == true)
             .Select(e => new
             {
                 Excursion = e,
