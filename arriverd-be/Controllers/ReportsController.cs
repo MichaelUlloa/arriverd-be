@@ -31,7 +31,7 @@ public class ReportsController : BaseApiController
         return excursions.Select(x => new ListExcursionModel(x));
     }
 
-    [HttpGet("excursion-reservations-data")]
+    [HttpGet("excursions")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -43,25 +43,23 @@ public class ReportsController : BaseApiController
                 Excursion = e,
                 ReservationCount = e.Reservations.Select(x => x.Quantity).Sum(x => x)
             })
-            .Where(x => x.Excursion.Meeting > DateTime.Now)
             .OrderBy(x => x.Excursion.Departure)
             .ToListAsync();
 
         return excursions.Select(x => new ExcursionReservationReport(x.Excursion, x.ReservationCount));
     }
 
-    [HttpGet("excursion-summary")]
+    [HttpGet("excursions/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesErrorResponseType(typeof(void))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IEnumerable<ExcursionDetailsReport>> ExcursionSummary(
-        [FromQuery(Name = "excursion_id"), Required] int excursionId)
+    public async Task<IEnumerable<ExcursionDetailsReport>> ExcursionSummary(int id)
     {
         var reservations = await _dbContext.Reservations
             .Include(x => x.User)
             .Include(x => x.Excursion)
             .Include(x => x.PaymentMethod)
-            .Where(x => x.Excursion!.Id == excursionId)
+            .Where(x => x.Excursion!.Id == id)
             .ToListAsync();
 
         return reservations.Select(x => new ExcursionDetailsReport(x));

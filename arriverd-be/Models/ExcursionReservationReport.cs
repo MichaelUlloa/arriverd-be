@@ -8,6 +8,7 @@ public class ExcursionReservationReport
     {
         Excursion = new()
         {
+            Id = excursion.Id,
             Name = excursion.Name,
             Departure = excursion.Departure,
             Capacity = excursion.Capacity,
@@ -24,6 +25,7 @@ public class ExcursionReservationReport
 
     public class ExcursionModel
     {
+        public int? Id { get; set; }
         public string? Name { get; set; }
         public DateTime? Departure { get; set; }
         public short? Capacity { get; set; }
