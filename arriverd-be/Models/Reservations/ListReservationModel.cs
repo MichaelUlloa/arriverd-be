@@ -22,6 +22,7 @@ public class ListReservationModel
             Price = reservation.Excursion?.Price,
             Description = reservation.Excursion?.Description,
             EquipmentDetails = reservation.Excursion?.EquipmentDetails,
+            PrimaryImageUrl = reservation.Excursion?.Images?.FirstOrDefault()?.Url,
             IsPublic = reservation.Excursion?.IsPublic,
             IsActive = reservation.Excursion?.IsActive,
         };
@@ -55,6 +56,7 @@ public class ListReservationModel
         public decimal? Price { get; set; }
         public string? Description { get; set; }
         public string? EquipmentDetails { get; set; }
+        public string? PrimaryImageUrl { get; set; }
         public bool? IsPublic { get; set; }
         public bool? IsActive { get; set; }
     }

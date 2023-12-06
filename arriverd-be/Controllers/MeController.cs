@@ -24,6 +24,7 @@ public class MeController : BaseApiController
             .Reservations
             .Where(x => x.UserId == userId)
             .Include(x => x.Excursion)
+                .ThenInclude(x => x!.Images!.OrderBy(i => i.Order).Take(1))
             .ToListAsync();
 
         return excursions.Select(x => new ListReservationModel(x));
